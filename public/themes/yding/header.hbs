@@ -1,0 +1,64 @@
+<div id="header">
+    <div class="top">
+        <div class="topmain">
+            <div class="searchbox">
+                <div class="so_so">
+                    <div class="logo"><a href="/" title="{{siteInfo.title}}"><img src="/themes/{{siteInfo.theme}}/images/logo.gif" / alt="{{siteInfo.title}}"></a></div>
+                    <div class="mk_so">
+                        <input type="text" class="input" name="" />
+                        <input type="image" src="/themes/{{siteInfo.theme}}/images/btn.jpg" class="btn" />
+                    </div>
+                </div>
+                <div class="question">
+                    <ul>
+                        <li class="li5"><a href="#">最近更新</a></li>
+                        <li class="li6"><a href="#">影片排行</a></li>
+                        <li class="li7"><a href="#">收藏本站</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!--菜单导航-->
+            <div class="topnavmenu">
+                <div class="nav">
+                    <ul class="clearfix">
+                    {{#foreach navigation}}
+                        {{#if isShow}}
+                        <li class="top_item {{#if current}}on{{/if}}" >
+                            <a href="{{#if path}}{{path}}{{else}}{{mixed.url}}{{/if}}" title="{{name}}">{{name}}</a>
+                            {{#if nodes}}
+                            <div class="submenu">
+                                <ul>
+                                    {{#foreach nodes}}
+                                    <li><a href="{{#if path}}{{path}}{{else}}{{mixed.url}}{{/if}}" title="{{name}}" class="{{#if current}}on{{/if}}">{{name}}</a></li>
+                                    {{/foreach}}
+                                </ul>
+                            </div>
+                            {{/if}}
+                        </li>
+                        {{/if}}
+                    {{/foreach}}
+                    </ul>
+                </div>
+                <div class="notice">
+                    <h1>公告栏：</h1>
+                    <div class="txtMarquee-left">
+                        <div class="bd">
+                            <ul class="infoList">
+                                <li><a href="#" target="_blank">中国打破了世界软件巨头规则</a><span>[11-11]</span></li>
+                                <li><a href="#" target="_blank">施强：高端专业语言教学</a><span>[11-11]</span></li>
+                                <li><a href="#" target="_blank">新加坡留学，国际双语课程</a><span>[11-11]</span></li>
+                                <li><a href="#" target="_blank">高考后留学日本名校随你选</a><span>[11-11]</span></li>
+                                <li><a href="#" target="_blank">教育培训行业优势资源推介</a><span>[11-11]</span></li>
+                                <li><a href="#" target="_blank">女友坚持警局完婚不抛弃</a><span>[11-11]</span></li>
+                            </ul>
+                        </div>
+                        <div class="hd"> <a class="next"></a> <a class="prev"></a> </div>
+                    </div>
+                    <script type="text/javascript">
+                        jQuery(".txtMarquee-left").slide({ mainCell: ".bd ul", autoPlay: true, effect: "leftMarquee", vis: 2, interTime: 50 });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+{{#contentFor "style"}}
+<link href="/themes/{{siteInfo.theme}}/css/whir_channel.css" rel="stylesheet" type="text/css" />
+{{/contentFor}}
+{{!-- 轮播图 --}}
+<div class="channel-focus">
+    <div class="channel-silder layout">
+        <ul class="channel-silder-cnt">
+            {{#foreach readingList.total limit="9"}}
+            <li class="channel-silder-panel fn-clear">
+                <a class="channel-silder-img" target="_blank" href="{{href}}">
+                    <img src="{{thumbnail.src.big}}" title="{{title}}">
+                </a>
+                <div class="channel-silder-intro">
+                    <div class="channel-silder-title">
+                        <h2><a target="_blank" href="{{href}}" title="{{title}}">{{title}}</a></h2>
+                        <span>{{extensions.status}}</span>
+                    </div>
+                    <ul class="channel-silder-info fn-clear">
+                        <li class="long"><label>主演：</label><span>{{extensions.actors}}</span></li>
+                        <li>类型：<span>{{extensions.type}}</span></li>
+                        <li>导演：<span>{{extensions.director}}</span></li>
+                        <li>年份：<span>{{extensions.time}}</span></li>
+                        <li>时间：<span>{{extensions.year}}</span></li>
+                    </ul>
+                    <p class="channel-silder-desc">剧情：<span>{{abstract}}</span></p>
+                    <a class="channel-silder-play" target="_blank" href="{{href}}" title="{{title}}">马上观看</a>
+                </div>
+            </li>
+            {{/foreach}}
+        </ul>
+        <ul class="channel-silder-nav fn-clear">
+            {{#foreach readingList.total limit="9"}}
+            <li class=""><a target="_blank" href="{{href}}"><img src="{{thumbnail.src.small}}" alt="{{title}}"></a></li>
+            {{/foreach}}
+        </ul>
+    </div>
+    <script type="text/javascript">
+        jQuery(".channel-silder").slide({
+            titCell:".channel-silder-nav li",
+            mainCell:".channel-silder-cnt",
+            delayTime:800,
+            triggerTime:0,
+            interTime:5000,
+            pnLoop:false,
+            autoPage:false,
+            autoPlay:true
+        });
+    </script>
+</div>
+{{!-- 快速搜索 --}}
+<div class="kssx">
+    <div class="diqu">
+        <h2>按地区</h2>
+        {{#foreach category.model.extensions}}
+        {{#compare key "==" "area"}}
+            {{#foreach mixed.select}}
+            <a href="/find?pd={{#with ../../../category}}{{name}}{{/with}}&area={{name}}">{{name}}</a>
+            {{/foreach}}
+        {{/compare}}
+        {{/foreach}}
+    </div>
+    <div class="leixing">
+        <h2>按类型</h2>
+        {{#foreach category.model.extensions}}
+        {{#compare key "==" "type"}}
+            {{#foreach mixed.select}}
+            <a href="/find?pd={{#with ../../../category}}{{name}}{{/with}}&type={{name}}">{{name}}</a>
+            {{/foreach}}
+        {{/compare}}
+        {{/foreach}}
+    </div>
+    <div class="hotword">
+        <h2>按年代</h2>
+        {{#foreach category.model.extensions}}
+        {{#compare key "==" "year"}}
+            {{#foreach mixed.select}}
+            <a href="/find?pd={{#with ../../../category}}{{name}}{{/with}}&year={{name}}">{{name}}</a>
+            {{/foreach}}
+        {{/compare}}
+        {{/foreach}}
+    </div>
+</div>
+{{!-- 栏目列表 --}}
+<div class="ad">
+    <div class="channel-column-box">
+        {{#each lists}}
+        <div class="channel-column">
+            <div class="title">
+                <h2>{{name}}</h2>
+                <a href="{{path}}" class="more"></a>
+            </div>
+            <div class="img-list">
+                <ul>
+                    {{#foreach contents limit="7"}}
+                    <li>
+                        <a href="{{href}}">
+                            <img src="{{thumbnail.src.small}}" alt="{{title}}">
+                            <span class="ellipsis-one">{{extensions.status}}</span>
+                        </a>
+                        <h3 class="ellipsis-one"><a>{{title}}</a></h3>
+                    </li>
+                    {{else}}
+                    <li class="no-content" style="float:none;margin:0;"></li>
+                    {{/foreach}}
+                </ul>
+            </div>
+            {{#compare contents.length '>' 7}}
+            <div class="text-list">
+                <ul>
+                    {{#foreach contents from="8" limit="21"}}
+                    <li class="ellipsis-one"><a href="{{href}}">{{title}}</a></li>
+                    {{/foreach}}
+                </ul>
+            </div>
+            {{/compare}}
+        </div>
+        {{else}}
+        <div class="no-content"></div>
+        {{/each}}
+    </div>
+    <div class="channel-rank-box">
+        <div class="channel-rank">
+            <div class="title">
+                <h2>总排行<span>TOP10</span></h2>
+            </div>
+            <div class="top-list-item">
+                {{#foreach readingList.total limit="10"}}
+                <dl>
+                    <dt class="{{#compare @number '<' 4}}top-3{{/compare}}">{{@number}}</dt>
+                    <dd>
+                        <h3><a href="{{href}}">{{title}}</a><i></i><span>{{reading.total}}次</span></h3>
+                        <p>{{extensions.desc}}</p>
+                    </dd>
+                </dl>
+                {{else}}
+                <div class="no-content"></div>
+                {{/foreach}}
+            </div>
+        </div>
+        <div class="channel-rank">
+            <div class="title">
+                <h2>月排行<span>TOP10</span></h2>
+            </div>
+            <div class="top-list-item">
+                {{#foreach readingList.month limit="10"}}
+                <dl>
+                    <dt class="{{#compare @number '<' 4}}top-3{{/compare}}">{{@number}}</dt>
+                    <dd>
+                        <h3><a href="{{href}}">{{title}}</a><i></i><span>{{reading.total}}次</span></h3>
+                        <p>{{extensions.desc}}</p>
+                    </dd>
+                </dl>
+                {{else}}
+                <div class="no-content"></div>
+                {{/foreach}}
+            </div>
+        </div>
+        <div class="channel-rank">
+            <div class="title">
+                <h2>周排行<span>TOP10</span></h2>
+            </div>
+            <div class="top-list-item">
+                {{#foreach readingList.week limit="10"}}
+                <dl>
+                    <dt class="{{#compare @number '<' 4}}top-3{{/compare}}">{{@number}}</dt>
+                    <dd>
+                        <h3><a href="{{href}}">{{title}}</a><i></i><span>{{reading.total}}次</span></h3>
+                        <p>{{extensions.desc}}</p>
+                    </dd>
+                </dl>
+                {{else}}
+                <div class="no-content"></div>
+                {{/foreach}}
+            </div>
+        </div>
+        <div class="channel-rank">
+            <div class="title">
+                <h2>日排行<span>TOP10</span></h2>
+            </div>
+            <div class="top-list-item">
+                {{#foreach readingList.day limit="10"}}
+                <dl>
+                    <dt class="{{#compare @number '<' 4}}top-3{{/compare}}">{{@number}}</dt>
+                    <dd>
+                        <h3><a href="{{href}}">{{title}}</a><i></i><span>{{reading.total}}次</span></h3>
+                        <p>{{extensions.desc}}</p>
+                    </dd>
+                </dl>
+                {{else}}
+                <div class="no-content"></div>
+                {{/foreach}}
+            </div>
+        </div>
+    </div>
+</div>
