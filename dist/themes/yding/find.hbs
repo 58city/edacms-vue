@@ -1,0 +1,92 @@
+{{#contentFor "style"}}
+<link href="/themes/{{siteInfo.theme}}/css/whir_column.css" rel="stylesheet" type="text/css" />
+{{/contentFor}}
+<div id="container">
+    <div class="left958">
+        <div class="kssearch1">
+            <div class="address">
+                <h1>地区</h1>
+                <h2>
+                    <span>全部</span>
+                    {{#foreach category.model.extensions}}
+                    {{#compare key "==" "area"}}
+                        {{#foreach mixed.select}}<a href="#">{{name}}</a>{{/foreach}}
+                    {{/compare}}
+                    {{/foreach}}
+                </h2>
+            </div>
+            <div class="address">
+                <h1>类型</h1>
+                <h2>
+                    <span>全部</span>
+                    {{#foreach category.model.extensions}}
+                    {{#compare key "==" "type"}}
+                        {{#foreach mixed.select}}<a href="#">{{name}}</a>{{/foreach}}
+                    {{/compare}}
+                    {{/foreach}}
+                </h2>
+            </div>
+            <div class="address">
+                <h1>年代</h1>
+                <h2>
+                    <span>全部</span>
+                    {{#foreach category.model.extensions}}
+                    {{#compare key "==" "year"}}
+                        {{#foreach mixed.select}}<a href="#">{{name}}</a>{{/foreach}}
+                    {{/compare}}
+                    {{/foreach}}
+                </h2>
+            </div>
+        </div>
+        <div class="kssearchbox1">
+            <span class="sspx">排序</span>
+            <div class="SelectBox">
+                <span class="SelectText">最多播放</span>
+                <dl class="SelectList" style="display: none;">
+                    <dt><a href="javascript:void(0)">香港</a></dt>
+                    <dt><a href="javascript:void(0)">北京</a></dt>
+                    <dt><a href="javascript:void(0)">广州</a></dt>
+                    <dt><a href="javascript:void(0)">上海</a></dt>
+                    <dt><a href="javascript:void(0)">杭州</a></dt>
+                    <dt><a href="javascript:void(0)">长沙</a></dt>
+                </dl>
+            </div>
+            <div class="SelectBox1">
+                <span class="SelectText1">本周</span>
+                <dl class="SelectList1" style="display: none;">
+                    <dt><a href="javascript:void(0)">香港</a></dt>
+                    <dt><a href="javascript:void(0)">北京</a></dt>
+                    <dt><a href="javascript:void(0)">广州</a></dt>
+                    <dt><a href="javascript:void(0)">上海</a></dt>
+                    <dt><a href="javascript:void(0)">杭州</a></dt>
+                    <dt><a href="javascript:void(0)">长沙</a></dt>
+                </dl>
+            </div>
+            <div class="wdss"><input type="text" class="input1"><input type="image" src="/themes/{{siteInfo.theme}}/images/search.jpg"
+                    class="btn1"></div>
+            <span class="ssjg">共1200个筛选结果</span>
+            <div class="page1"><span class="num">
+                    <font class="f_blue">1</font>/41
+                </span><span class="prev">上一页</span><span class="next"><a href="#">下一页</a></span> </div>
+        </div>
+        <div class="splist">
+            视频列表
+        </div>
+        <div class="page"><span class="prev">上一页</span><span class="num"><a href="#" class="on">1</a><a href="#">2</a><a
+                    href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">6</a><a href="#">7</a><a
+                    href="#">8</a><a href="#">9</a><a href="#">10</a></span><span class="next"><a
+                    href="#">下一页</a></span><em>217/5</em>转到
+            <input name="textfield" type="text" value="5" class="inputpage">
+            页
+            <input type="submit" name="Submit" value="GO" class="btngo">
+        </div>
+    </div>
+    <div class="right213">
+        <div class="title">
+            <h1>推荐电视剧</h1>
+        </div>
+        <div class="likelist">
+            视频列表
+        </div>
+    </div>
+</div>

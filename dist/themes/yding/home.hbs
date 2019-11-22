@@ -1,0 +1,170 @@
+{{#contentFor "style"}}
+<link href="/themes/{{siteInfo.theme}}/css/whir_home.css" rel="stylesheet" type="text/css" />
+{{/contentFor}}
+{{!-- 轮播图 --}}
+<div class="home-focus">
+    <div class="txMovie">
+        <ul class="focus_pic" id="focus_pic_list">
+            {{#features 'home_focus'}}
+            <li><a href="{{url}}" target="_blank"><img src="{{thumbnail.src.big}}"></a></li>
+            {{/features}}
+        </ul>
+        <div class="focus_nav">
+            <div class="tempWrap">
+                <ul id="focus_smaillPic_list">
+                    {{#features 'home_focus'}}
+                    <li><a><img src="{{thumbnail.src.small}}"><span class="cover"></span></a><b>▲</b></li>
+                    {{/features}}
+                </ul>
+            </div> 
+            <a href="javascript:;" title="上一个" class="navPrev">上一个</a> 
+            <a href="javascript:;" title="下一个" class="navNext nextStop">下一个</a>
+        </div>
+        <div class="focus_text">
+            <ul id="focus_content_list">
+                {{#features 'home_focus'}}
+                <li>
+                    <h2><a href="{{url}}">{{title}}</a></h2>
+                    <p class="sub_tit">{{extensions.desc}}</p>
+                    <div class="focus_info">
+                        <p class="c_txt4">导演：{{extensions.director}}</p>
+                        <p class="c_txt4">主演：{{extensions.actors}}</p>
+                        <p class="c_txt4 mod_desc ellipsis-6">{{extensions.abstract}}</p>
+                    </div> <a href="#" class="btn_play_big"><span>立即播放</span></a>
+                </li>
+                {{/features}}
+            </ul>
+        </div>
+    </div>
+    <script>
+        //大图和文字切换
+        jQuery(".txMovie").slide({ 
+            titCell:".focus_nav li",
+            mainCell:".focus_pic", 
+            targetCell:".focus_text li", 
+            autoPlay:true,
+            delayTime:100,
+            startFun:function(i,p){
+                //控制小图自动翻页
+                if(i==0){ 
+                    jQuery(".txMovie .navPrev").click() 
+                } else if( i%9==0 ){ 
+                    jQuery(".txMovie .navNext").click()
+                }
+            }
+        });
+        //小图滚动
+        jQuery(".txMovie").slide({ 
+            mainCell:".focus_nav ul",
+            prevCell:".navPrev",
+            nextCell:".navNext",
+            effect:"left",
+            vis:9,
+            scroll:9,
+            delayTime:0,
+            autoPage:true,
+            pnLoop:false
+        });
+    </script>
+</div>
+{{!-- 频道列表 --}}
+{{#foreach lists}}
+<div class="home-channel">
+    <div class="video-list-box">
+        <div class="title">
+            <h2 class="{{#compare name '==' '电视剧'}}title-theme-blue{{/compare}}
+                       {{#compare name '==' '电影'}}title-theme-red{{/compare}}
+                       {{#compare name '==' '综艺'}}title-theme-green{{/compare}}
+                       {{#compare name '==' '体育'}}title-theme-yellow{{/compare}}
+                       {{#compare name '==' '动漫'}}title-theme-purple{{/compare}}
+                       {{#compare name '==' '纪录片'}}title-theme-pink{{/compare}}
+                       {{#compare name '==' '公开课'}}title-theme-blue2{{/compare}}
+                       {{#compare name '==' '预告片'}}title-theme-purple2{{/compare}}
+                      "
+            >
+                {{name}}
+                <span>
+                    {{#compare name '==' '电视剧'}}Teleplay{{/compare}}
+                    {{#compare name '==' '电影'}}Good Movies{{/compare}}
+                    {{#compare name '==' '综艺'}}Nice Shows{{/compare}}
+                    {{#compare name '==' '体育'}}Excited Sport{{/compare}}
+                    {{#compare name '==' '动漫'}}Cute Cartoon{{/compare}}
+                    {{#compare name '==' '纪录片'}}Discovery{{/compare}}
+                    {{#compare name '==' '公开课'}}Courses{{/compare}}
+                    {{#compare name '==' '预告片'}}Trailers{{/compare}}
+                </span>
+            </h2>
+            <a href="{{path}}" class="more" title="更多"></a>
+        </div>
+        <div class="video-list-item">
+            <div class="focus-item focus-item{{@index}}">
+                <ul class="pic">
+                    {{#foreach contents limit="3"}}
+                    <li>
+                        <a href="{{href}}" target="_blank">
+                            <img src="{{thumbnail.src.big}}" alt="{{thumbnail.description}}">
+                        </a>
+                        <h3>
+                            <a href="{{href}}">{{title}}</a><span>{{extensions.status}}</span>
+                        </h3>
+                    </li>
+                    {{else}}
+                    <li class="no-content"></li>
+                    {{/foreach}}
+                </ul>
+                <div class="txt-bg"></div>
+                <ul class="num">{{#foreach contents limit="3"}}<li></li>{{/foreach}}</ul>
+                <script>
+                    jQuery(".focus-item{{@index}}").slide({ 
+                        titCell:".num li", 
+                        mainCell:".pic",
+                        effect:"fold", 
+                        autoPlay:true,
+                        trigger:"click"
+                    });	
+                </script>
+            </div>
+            <div class="normal-item">
+                {{#foreach contents from=4 to=7}}
+                {{!-- {{#compare @index '>' 2}} --}}
+                <dl>
+                    <dt><a href="{{href}}"><img src="{{thumbnail.src.small}}" alt="{{thumbnail.description}}"></a></dt>
+                    <dd>
+                        <h3><a href="">{{title}}</a></h3>
+                        <span class="status">{{extensions.status}}</span>
+                        <p class="ellipsis-more">{{abstract}}</p>
+                        <span class="ellipsis-one">演员：{{extensions.actors}}</span>
+                        <span>地区：{{extensions.area}}</span>
+                    </dd>
+                </dl>
+                {{!-- {{/compare}} --}}
+                {{else}}
+                <div class="no-content"></div>
+                {{/foreach}}
+            </div>
+        </div>
+    </div>
+    <div class="top-list-box">
+        <div class="title">
+            <h2>{{name}}排行<span>TOP6</span></h2>
+        </div>
+        <div class="top-list-item">
+            {{#foreach contents limit="6" sort="-reading.total"}}
+            <dl>
+                <dt class="top-3">{{@number}}</dt>
+                <dd>
+                    <h3>
+                        <a href="{{href}}">{{title}}</a>
+                        <i></i>
+                        <span>{{reading.total}}次</span>
+                    </h3>
+                    <p>{{extensions.desc}}</p>
+                </dd>
+            </dl>
+            {{else}}
+            <div class="no-content"></div>
+            {{/foreach}}
+        </div>
+    </div>
+</div>
+{{/foreach}}
