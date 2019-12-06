@@ -9,7 +9,7 @@
       </span>
     </div>
 
-    <el-menu default-active="2" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" :router="true">
+    <el-menu default-active="0" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" :router="true">
       <el-menu-item index="/admin">
         <i class="el-icon-menu"></i>
         <span slot="title">控制面板</span>
@@ -201,6 +201,9 @@
 
   .el-menu{
     border: none;
+  }
+  .el-menu-item{
+    background-color: transparent!important;
   }
   .el-menu-item, 
   .el-submenu__title{

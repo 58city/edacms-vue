@@ -1,7 +1,7 @@
 <template>
   <div id="widget">
     <div class="widget-header">
-      <h2><slot name="title"></slot></h2>
+      <h2 v-if="!tab"><slot name="title"></slot></h2>
       <ul class="widget-tabs" v-if="tab">
         <li v-for="(item,index) in tabTitles" :key="index" @click="toggleTab(index)" :class="{active:index==currentTabIndex}">
           {{item}}
@@ -56,7 +56,7 @@ export default {
   methods: {
     toggleTab(index){
       this.currentTabIndex=index
-      this.$emit('tabClicked',index)
+      this.$emit('tabClicked',this.currentTabIndex)
     },
     searchSubmit(){
       this.$emit('searchClicked',this.searchContent)
@@ -85,8 +85,8 @@ export default {
 #widget > .widget-header {
   height: 34px;
   color: #333;
-  border: 1px solid #ddd;
-  background: #eee;
+  border: 1px solid #EBEEF5;
+  background: #f5f5f5;
 }
 /* 标题 */
 #widget > .widget-header h2 {
@@ -164,7 +164,7 @@ export default {
 #widget > .widget-body {
   padding: 13px;
   font-size: 13px;
-  border: 1px solid #ddd;
+  border: 1px solid #EBEEF5;
   border-top-width: 0;
   background-color: #fff;
 }
