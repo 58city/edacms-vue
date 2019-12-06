@@ -92,16 +92,16 @@ const routes = [
         path: 'account',name:'account',component: MyAccount,meta:{title:'我的账号'}
       },
       {
-        path: 'site-info',name:'site-info',component: SiteInfo
+        path: 'site-info',name:'site-info',component: SiteInfo,meta:{title:'站点信息'}
       },
       {
-        path: 'categories',name:'categories',component: Categories
+        path: 'categories',name:'categories',component: Categories,meta:{title:'分类管理'}
       },
       {
-        path: 'content-models',name:'content-models',component: ContentModels
+        path: 'content-models',name:'content-models',component: ContentModels,meta:{title:'模型管理'}
       },
       {
-        path: 'feature-models',name:'feature-models',component: FeatureModels
+        path: 'feature-models',name:'feature-models',component: FeatureModels,meta:{title:'推荐管理'}
       }
     ]
   },
