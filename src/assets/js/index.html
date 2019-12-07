@@ -5,13 +5,26 @@
 	<title>Document</title>
 </head>
 <body>
-	<script src="jquery-2.0.3.js"></script>
+
 	<script>
-		$.holdReady(true)
-		$(function(){
-			// alert(1)
-		})
+		var class2type = {}
+		var core_toString=class2type.toString
+
+		var type_arr="Boolean Number String Function Array Date RegExp Object Error".split(" ")
+		for(var i=0;i<type_arr.length;i++){
+			class2type[ "[object " + type_arr[i] + "]" ] = type_arr[i].toLowerCase();
+		}
 		
+		function type( obj ) {
+			if ( obj == null ) {
+				return String( obj );
+			}
+
+			return typeof obj === "object" || typeof obj === "function" ?
+				class2type[ core_toString.call(obj) ] || "object" :
+				typeof obj;
+		}
+		console.log( typeof new Function )
 	</script>
 </body>
 </html>

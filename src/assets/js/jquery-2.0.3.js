@@ -336,59 +336,63 @@
 				jQuery( document ).trigger("ready").off("ready");
 			}
 		},
-		// See test/unit/core.js for details concerning isFunction.
-		// Since version 1.3, DOM methods and functions like alert
-		// aren't supported. They return false on IE (#2968).
+		// 自1.3版本以后，在IE8及以下版本，jQuery不再支持把DOM方法和一些内置方法如alert，判断为function
+		// 而是object，因为IE8及以下版本，DOM方法和alert方法天生类型为object,而不是function，jQuery放弃了兼容处理
+		// $.isFunction(alert)==>高版本浏览器为function(true)，低版本浏览器为object(false)
 		isFunction: function( obj ) {
 			return jQuery.type(obj) === "function";
 		},
 		isArray: Array.isArray,
-
+		// null==undefined
 		isWindow: function( obj ) {
 			return obj != null && obj === obj.window;
 		},
-
 		isNumeric: function( obj ) {
 			return !isNaN( parseFloat(obj) ) && isFinite( obj );
 		},
-
+		/*
+		 * class2type={
+			  [object Array]:"array",
+				[object Boolean]:"boolean",
+				[object Date]:"date",
+				[object Error]:"error",
+				[object Function]:"function",
+				[object Number]:"number",
+				[object Object]:"object",
+				[object RegExp]:"regexp",
+				[object String]:"string"
+		  }
+		 */ 
 		type: function( obj ) {
 			if ( obj == null ) {
 				return String( obj );
 			}
-			// Support: Safari <= 5.1 (functionish RegExp)
-			return typeof obj === "object" || typeof obj === "function" ?
-				class2type[ core_toString.call(obj) ] || "object" :
-				typeof obj;
+			// JS中复杂数据类型，使用typeof
+			// 内置方法如alert、DOM方法、Function构造函数、Safari5.1以下的RegExp构造函数==>function
+			// 内置方法如alert、DOM方法(IE6/7/8下)==>object
+			// widow、DOM节点、Array、Boolean、Date、Error、Number、Object、String、Safari5.1以上的RegExp构造函数==>object
+			return (typeof obj === "object" || typeof obj === "function") ? class2type[ core_toString.call(obj) ] || "object" 
+			                                                              : typeof obj;
 		},
-
+		// 通过字面量方式{}或使用new Object构造出来的对象为plain object
 		isPlainObject: function( obj ) {
-			// Not plain objects:
-			// - Any object or value whose internal [[Class]] property is not "[object Object]"
-			// - DOM nodes
-			// - window
 			if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
 				return false;
 			}
-
-			// Support: Firefox <20
-			// The try/catch suppresses exceptions thrown when attempting to access
-			// the "constructor" property of certain host objects, ie. |window.location|
-			// https://bugzilla.mozilla.org/show_bug.cgi?id=814622
 			try {
-				if ( obj.constructor &&
-						!core_hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
+				// 只有根类（Object）的原型上才存在isPrototypeOf属性，其他类会继承该属性，但是该属性并不存在于其他子类身上
+				// hasOwnProperty的作用是判断某一个类的实例上是否存在某一个属性，语法：instance.hasOwnProperty(propertyname)
+				// 原型本身是一个对象，也是一个Object的实例，所以也可以使用hasOwnProperty检查原型上有没有某一个属性，如下：
+				// ([]).constructor.prototype.hasOwnProperty("isPrototypeOf") ==> false
+				// ({}).constructor.prototype.hasOwnProperty('isPrototypeOf') ==> true
+				if ( obj.constructor && !core_hasOwn.call( obj.constructor.prototype, "isPrototypeOf" ) ) {
 					return false;
 				}
 			} catch ( e ) {
 				return false;
 			}
-
-			// If the function hasn't returned already, we're confident that
-			// |obj| is a plain object, created by {} or constructed with new Object
 			return true;
 		},
-
 		isEmptyObject: function( obj ) {
 			var name;
 			for ( name in obj ) {
@@ -396,11 +400,9 @@
 			}
 			return true;
 		},
-
 		error: function( msg ) {
 			throw new Error( msg );
 		},
-
 		// data: string of html
 		// context (optional): If specified, the fragment will be created in this context, defaults to document
 		// keepScripts (optional): If true, will include scripts passed in the html string

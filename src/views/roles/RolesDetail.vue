@@ -2,26 +2,26 @@
   <div id="roles-detail">
     <panel tab :tab-titles="['基本信息','权限设置']" @tabClicked="tTab">
       <button slot="button"><i class="fa fa-save"></i>保存设置</button>
-      <el-form slot="body" :model="roleInfo" :rules="rules" ref="roleInfoForm" label-width="100px" v-if="currentTab==0">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="roleInfo.name"></el-input>
-        </el-form-item>
-        <el-form-item label="角色说明" prop="description">
-          <el-input v-model="roleInfo.description"></el-input>
-        </el-form-item>
-      </el-form>
-      <el-table slot="body" :data="authList" border style="width: 100%" v-if="currentTab==1">
-        <el-table-column prop="description" label="菜单" width="180"></el-table-column>
-        <el-table-column label="权限">
-          <template slot-scope="scope">
-            <el-radio-group size="mini">
-              <el-radio-button label="无权限"></el-radio-button>
-              <el-radio-button label="仅查看"></el-radio-button>
-              <el-radio-button label="查看和编辑"></el-radio-button>
+      <el-form slot="body" :model="roleInfo" :rules="rules" ref="roleInfoForm" label-width="100px">
+        <div v-if="currentTab==0">
+          <el-form-item label="角色名称" prop="name">
+            <el-input v-model="roleInfo.name"></el-input>
+          </el-form-item>
+          <el-form-item label="角色说明" prop="description">
+            <el-input v-model="roleInfo.description"></el-input>
+          </el-form-item>
+        </div>
+        <div v-if="currentTab==1">
+          <el-form-item :label="item.description"  v-for="(item,index) in authList" :key="index">
+            <el-radio-group>
+              <el-radio :label="3">无权限</el-radio>
+              <el-radio :label="6">仅查看</el-radio>
+              <el-radio :label="9">查看和编辑</el-radio>
             </el-radio-group>
-          </template>
-        </el-table-column>
-      </el-table>
+          </el-form-item>
+          
+        </div>
+      </el-form>
     </panel>
   </div>
 </template>
@@ -65,8 +65,14 @@ export default {
 }
 </script>
 
-<style scoped>
-  /* #roles-detail{ */
-    /* width: 500px; */
-  /* } */
+<style>
+  #roles-detail .el-form-item {
+    margin-bottom:10px;
+    border-top: 1px solid #EBEEF5;
+  }
+  #roles-detail .el-form-item .el-form-item__content,
+  #roles-detail .el-form-item .el-form-item__label{
+    height: 30px;;
+    line-height: 30px;
+  }
 </style>
