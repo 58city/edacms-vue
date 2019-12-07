@@ -94,6 +94,8 @@
 					match = rquickExpr.exec( selector );
 				}
 				// 处理：selector参数为html标签和ID的情况
+				// $('<li>')、$('<li>内容</li>')、$('<li>内容')
+				// $('#box')
 				if ( match && (match[1] || !context) ) {
 					if ( match[1] ) {
 						context = context instanceof jQuery ? context[0] : context;
@@ -114,8 +116,8 @@
 						return this;
 					} else {
 						elem = document.getElementById( match[2] );
-						// Check parentNode to catch when Blackberry 4.6 returns
-						// nodes that are no longer in the document #6963
+						// Blackberry 4.6仅仅判断elem存在是不行的，还要判断他父节点存在
+						// 引文即使节点不再在文档中，Blackberry 4.6依然能够获取并返回
 						if ( elem && elem.parentNode ) {
 							this.length = 1;
 							this[0] = elem;
@@ -124,15 +126,18 @@
 						this.selector = selector;
 						return this;
 					}
-				// 处理：selector参数为类选择器、标签选择器...的情况
-				// 没有指定上下文，执行rootjQuery.find()，指定了上下文且上下文是jQuery对象(context.jquery)，执行context.find()
+				// 处理：selector参数为传递了上下文的ID选择器、类选择器、标签选择器...的情况
+				// 没有指定上下文，执行rootjQuery.find()
+				// 指定了上下文且上下文是jQuery对象(context.jquery)，执行context.find()
 				// $('.box')            ==>jQuery(document).find('.box')
 				// $('.box',$(document))==>$(document).find('.box')
+				// $('#box',$(document))==>$(document).find('#box')
 				} else if ( !context || context.jquery ) {
 					return ( context || rootjQuery ).find( selector );
-				// 处理：selector参数为类选择器、标签选择器...的情况
-				// 如果指定了上下文，且上下文不是jQuery对象
+				// 处理：selector参数为传递了上下文的ID选择器、类选择器、标签选择器...的情况
+				// 指定了上下文，且上下文不是jQuery对象
 				// $('.box',document)   ==>jQuery(document).find('.box')
+				// $('#box',document)   ==>jQuery(document).find('#box')
 				} else {
 					return this.constructor( context ).find( selector );
 				}
@@ -398,6 +403,9 @@
 			}
 			return true;
 		},
+		// in操作符用途：可用于遍历一切对象的实例属性和原型属性
+		// 遍历构造函数时，如果构造函数为空（内部默认虽然有prototype和constructor属性），则什么也遍历不到
+		// $.isEmptyObject([])/$.isEmptyObject({})/$.isEmptyObject(function(){})
 		isEmptyObject: function( obj ) {
 			var name;
 			for ( name in obj ) {
@@ -408,38 +416,40 @@
 		error: function( msg ) {
 			throw new Error( msg );
 		},
-		// data: string of html
-		// context (optional): If specified, the fragment will be created in this context, defaults to document
-		// keepScripts (optional): If true, will include scripts passed in the html string
+		// data: html字符串==>"<li>内容</li>"、
+		// context (可选): If specified, the fragment will be created in this context, defaults to document
+		// keepScripts (可选): If true, will include scripts passed in the html string
 		parseHTML: function( data, context, keepScripts ) {
 			if ( !data || typeof data !== "string" ) {
 				return null;
 			}
+			// 两个参数（中间省略）的情况：$('<li></li>',true),做如下处理
+			// 第一个参数data：'<li></li>'
+			// 第二个参数context：document
+			// 第三个参数keepScripts：true
 			if ( typeof context === "boolean" ) {
 				keepScripts = context;
 				context = false;
 			}
 			context = context || document;
-
-			var parsed = rsingleTag.exec( data ),
-				scripts = !keepScripts && [];
-
-			// Single tag
+			// /^<(\w+)\s*\/?>(?:<\/\1>|)$/  注：\1代表对第一个分组里匹配结果的引用
+			// $('<li></li>')、 $('<li>')、$('<li/>')、$('<li >')、$('<li />')
+			// 只能匹配如上字符串形式，得到的结果为[fullstring,li]
+			var parsed = rsingleTag.exec( data ),;
 			if ( parsed ) {
 				return [ context.createElement( parsed[1] ) ];
 			}
-
+			// $('<li></li><li></li>')
+			// 参数keepScripts为false,代表不包含scripts标签，则创建一个空数组，存放解析出来的scripts
+			// 参数keepScripts为true,代表包含scripts标签，则创建一个布尔值false
+			var scripts = !keepScripts && []
 			parsed = jQuery.buildFragment( [ data ], context, scripts );
-
 			if ( scripts ) {
 				jQuery( scripts ).remove();
 			}
-
 			return jQuery.merge( [], parsed.childNodes );
 		},
-
 		parseJSON: JSON.parse,
-
 		// Cross-browser xml parsing
 		parseXML: function( data ) {
 			var xml, tmp;
