@@ -374,11 +374,16 @@
 			return (typeof obj === "object" || typeof obj === "function") ? class2type[ core_toString.call(obj) ] || "object" 
 			                                                              : typeof obj;
 		},
-		// 通过字面量方式{}或使用new Object构造出来的对象为plain object
+		// 通过直接字面量方式{}或使用new Object构造出来的对象为plain object
 		isPlainObject: function( obj ) {
 			if ( jQuery.type( obj ) !== "object" || obj.nodeType || jQuery.isWindow( obj ) ) {
 				return false;
 			}
+			// 此步过滤掉数组、日期等object,使用try语句的原因是：Firefox <20时
+			// 当试图访问某些宿主对象（Host Object）的constructor属性时，会抛出异常，如window.location等
+			// 宿主对象（Host Object）：JavaScript语言提供的任何依赖于宿主环境的对象，如浏览器提供的DOM BOM，用户自定义的
+			// 原生对象（Native Object）：JavaScript语言提供的不依赖于执行宿主的对象，Array、Boolean、Date、Function...
+			// 内建对象（Build-in Object）：内建对象都是Native Object。
 			try {
 				// 只有根类（Object）的原型上才存在isPrototypeOf属性，其他类会继承该属性，但是该属性并不存在于其他子类身上
 				// hasOwnProperty的作用是判断某一个类的实例上是否存在某一个属性，语法：instance.hasOwnProperty(propertyname)
