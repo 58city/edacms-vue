@@ -450,116 +450,95 @@
 			return jQuery.merge( [], parsed.childNodes );
 		},
 		parseJSON: JSON.parse,
-		// Cross-browser xml parsing
 		parseXML: function( data ) {
 			var xml, tmp;
 			if ( !data || typeof data !== "string" ) {
 				return null;
 			}
-
-			// Support: IE9
+			// try的目的是为了兼容IE9,IE8/7/不支持new DOMParser，有另外的替代方案
+			// new DOMParser除了可以解析xml外，还可以解析html字符串，第二个参数需要改为text/html
+			// 解析html时会自动加上html的骨架结构，解析xml时不会
+			// 如果字符串有误如mime类型不匹配，标签没闭合DOMParser在IE9直接控制台报错，需要catch
 			try {
 				tmp = new DOMParser();
 				xml = tmp.parseFromString( data , "text/xml" );
 			} catch ( e ) {
 				xml = undefined;
 			}
-
+			// 其他浏览器不会控制台报错，会在解析结果里插入一个parsererror标签，里面包含错误信息
 			if ( !xml || xml.getElementsByTagName( "parsererror" ).length ) {
 				jQuery.error( "Invalid XML: " + data );
 			}
 			return xml;
 		},
-
+		// 常用于设置默认参数为空函数
 		noop: function() {},
-
-		// Evaluates a script in a global context
+		// 全局解析：eval的结果挂在全局
 		globalEval: function( code ) {
-			var script,
-					indirect = eval;
-
+			var script, indirect = eval;
 			code = jQuery.trim( code );
-
 			if ( code ) {
-				// If the code includes a valid, prologue position
-				// strict mode pragma, execute code by injecting a
-				// script tag into the document.
+				// 严格模式不支持eval，"'use strict'".indexOf("use strict")
 				if ( code.indexOf("use strict") === 1 ) {
 					script = document.createElement("script");
 					script.text = code;
 					document.head.appendChild( script ).parentNode.removeChild( script );
+				// eval直接使用为关键字，关键字方式解析的结果只在当前作用域有效
+				// 如果window.eval或赋给变量，则为window对象下的方法，解析结果会挂在全局
 				} else {
-				// Otherwise, avoid the DOM node creation, insertion
-				// and removal by using an indirect global eval
 					indirect( code );
 				}
 			}
 		},
-
-		// Convert dashed to camelCase; used by the css and data modules
-		// Microsoft forgot to hump their vendor prefix (#9572)
+		// 转驼峰： 
+		// 1）HTML的data属性,如：data-set ==> dataSet
+		// 2）CSS的属性，如：-moz-display ==> MozDisplay
+		//    IE浏览器私有前缀不同于其他浏览器:-ms-display ==> msDisplay
+		// rmsPrefix=/^-ms-/
+		// fcamelCase = function( all, letter ) { return letter.toUpperCase();},
 		camelCase: function( string ) {
 			return string.replace( rmsPrefix, "ms-" ).replace( rdashAlpha, fcamelCase );
 		},
-
+		// $.nodeNme(document.getElementById('box'),'div') ==> true
 		nodeName: function( elem, name ) {
 			return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 		},
 
-		// args is for internal usage only
+		// 第三个参数args供内部使用，区别在于callback传参不同
+		// $.each([1,2,3])/$.each({0:a,1:b,length:2})/$.each({a:'haha',length:1})
+		// 如果是数组for，伪数组for in
 		each: function( obj, callback, args ) {
-			var value,
-				i = 0,
-				length = obj.length,
-				isArray = isArraylike( obj );
-
+			var value, i = 0, length = obj.length, isArray = isArraylike( obj );
 			if ( args ) {
 				if ( isArray ) {
 					for ( ; i < length; i++ ) {
 						value = callback.apply( obj[ i ], args );
-
-						if ( value === false ) {
-							break;
-						}
+						if ( value === false ) { break; }
 					}
 				} else {
 					for ( i in obj ) {
 						value = callback.apply( obj[ i ], args );
-
-						if ( value === false ) {
-							break;
-						}
+						if ( value === false ) { break; }
 					}
 				}
-
-			// A special, fast, case for the most common use of each
 			} else {
 				if ( isArray ) {
 					for ( ; i < length; i++ ) {
 						value = callback.call( obj[ i ], i, obj[ i ] );
-
-						if ( value === false ) {
-							break;
-						}
+						if ( value === false ) { break; }
 					}
 				} else {
 					for ( i in obj ) {
 						value = callback.call( obj[ i ], i, obj[ i ] );
-
-						if ( value === false ) {
-							break;
-						}
+						if ( value === false ) { break; }
 					}
 				}
 			}
-
 			return obj;
 		},
-
 		trim: function( text ) {
 			return text == null ? "" : core_trim.call( text );
 		},
-
 		// results is for internal usage only
 		makeArray: function( arr, results ) {
 			var ret = results || [];
@@ -777,31 +756,25 @@
 		}
 		return readyList.promise( obj );
 	};
-
-// Populate the class2type map
-jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
-	class2type[ "[object " + name + "]" ] = name.toLowerCase();
-});
-
-function isArraylike( obj ) {
-	var length = obj.length,
-		type = jQuery.type( obj );
-
-	if ( jQuery.isWindow( obj ) ) {
-		return false;
+	// 填充class2type类型映射表
+	jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
+		class2type[ "[object " + name + "]" ] = name.toLowerCase();
+	});
+	// 判断是否是伪数组
+	function isArraylike( obj ) {
+		var length = obj.length, type = jQuery.type( obj );
+		if ( jQuery.isWindow( obj ) ) {
+			return false;
+		}
+		if ( obj.nodeType === 1 && length ) {
+			return true;
+		}
+		return type === "array" || type !== "function" &&
+			( length === 0 || typeof length === "number" && length > 0 && ( length - 1 ) in obj );
 	}
-
-	if ( obj.nodeType === 1 && length ) {
-		return true;
-	}
-
-	return type === "array" || type !== "function" &&
-		( length === 0 ||
-		typeof length === "number" && length > 0 && ( length - 1 ) in obj );
-}
-
-// All jQuery objects should point back to these
-rootjQuery = jQuery(document);
+	// 所有的jQuery对象都应该指向这个对象（所有）
+	// 因为在查找元素时，没有指定上下文的情况下，最终都是rootjQuery.find( selector )
+	rootjQuery = jQuery(document);
 /*!
  * Sizzle CSS Selector Engine v1.9.4-pre
  * http://sizzlejs.com/
