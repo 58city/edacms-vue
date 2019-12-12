@@ -435,7 +435,7 @@
 			// /^<(\w+)\s*\/?>(?:<\/\1>|)$/  注：\1代表对第一个分组里匹配结果的引用
 			// $('<li></li>')、 $('<li>')、$('<li/>')、$('<li >')、$('<li />')
 			// 只能匹配如上字符串形式，得到的结果为[fullstring,li]
-			var parsed = rsingleTag.exec( data ),;
+			var parsed = rsingleTag.exec( data );
 			if ( parsed ) {
 				return [ context.createElement( parsed[1] ) ];
 			}
@@ -503,10 +503,9 @@
 		nodeName: function( elem, name ) {
 			return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 		},
-
 		// 第三个参数args供内部使用，区别在于callback传参不同
-		// $.each([1,2,3])/$.each({0:a,1:b,length:2})/$.each({a:'haha',length:1})
-		// 如果是数组for，伪数组for in
+		// $.each([1,2,3])/$.each({0:a,1:b,length:2})/$.each({a:'haha',length:1})/$.each(Object('str'))
+		// 如果是数组和伪数组for，对象for in
 		each: function( obj, callback, args ) {
 			var value, i = 0, length = obj.length, isArray = isArraylike( obj );
 			if ( args ) {
@@ -539,33 +538,36 @@
 		trim: function( text ) {
 			return text == null ? "" : core_trim.call( text );
 		},
-		// results is for internal usage only
+		// if isArraylike  如果是数组或伪数组，合并为数组
+		// $.makeArray([1,2,3])               ==>[1,2,3]
+		// $.makeArray({0:1,1:2,2:3,length:3})==>[1,2,3]
+		// $.makeArray('hello')               ==>['hello']
+		// else            其他情况，整体push进数组
+		// $.makeArray({a:1,b:2,c:3})         ==>[{a:1,b:2,c:3}]
 		makeArray: function( arr, results ) {
 			var ret = results || [];
-
 			if ( arr != null ) {
 				if ( isArraylike( Object(arr) ) ) {
-					jQuery.merge( ret,
-						typeof arr === "string" ?
-						[ arr ] : arr
-					);
+					jQuery.merge( ret, typeof arr === "string" ? [ arr ] : arr );
 				} else {
 					core_push.call( ret, arr );
 				}
 			}
-
 			return ret;
 		},
-
 		inArray: function( elem, arr, i ) {
 			return arr == null ? -1 : core_indexOf.call( arr, elem, i );
 		},
-
+		// if ( typeof l === "number" )  第二个参数为数组或伪数组 
+		// $.merge([],'str')                 ==> ["s", "t", "r"]
+		// $.merge([],{0:1,1:2,length:2})    ==> [1, 2]
+		// $.merge({0:1,1:2,length:2},[3,4]) ==> {0: 1, 1: 2, 2: 3, 3: 4, length: 4}
+		// else                          第二个参数为不完整的伪数组
+		// $.merge({0:1,1:2,length:2},{0:3,1:4})
 		merge: function( first, second ) {
 			var l = second.length,
 				i = first.length,
 				j = 0;
-
 			if ( typeof l === "number" ) {
 				for ( ; j < l; j++ ) {
 					first[ i++ ] = second[ j ];
@@ -575,96 +577,81 @@
 					first[ i++ ] = second[ j++ ];
 				}
 			}
-
 			first.length = i;
-
 			return first;
 		},
-
+		// $.grep([63,24,59,32],function(item,i){
+  	//   return item<50
+		// })                                          ==> [24, 32]
+		// $.grep([63,24,59,32],function(item,i){
+		// 	return item<50
+		// },true)                                     ==> [63, 59]
 		grep: function( elems, callback, inv ) {
-			var retVal,
-				ret = [],
-				i = 0,
-				length = elems.length;
+			var retVal,ret = [],i = 0,length = elems.length;
 			inv = !!inv;
-
-			// Go through the array, only saving the items
-			// that pass the validator function
 			for ( ; i < length; i++ ) {
 				retVal = !!callback( elems[ i ], i );
 				if ( inv !== retVal ) {
 					ret.push( elems[ i ] );
 				}
 			}
-
 			return ret;
 		},
-
-		// arg is for internal usage only
+		// 第二个参数供内部使用
+		// if ( isArray )  参数为数组或伪数组走for
+		// else            参数为对象走for...in,转换为数组
+		// 最后一句嵌套数组拍扁：Array.prototype.concat.apply([],[[2],[3]]) ==> [2,3]
+		// $.map([[2],[3]],function(item,i){ return item })
 		map: function( elems, callback, arg ) {
-			var value,
-				i = 0,
-				length = elems.length,
-				isArray = isArraylike( elems ),
-				ret = [];
-
-			// Go through the array, translating each of the items to their
+			var value, i = 0,length = elems.length,isArray = isArraylike( elems ),ret = [];
 			if ( isArray ) {
 				for ( ; i < length; i++ ) {
 					value = callback( elems[ i ], i, arg );
-
 					if ( value != null ) {
 						ret[ ret.length ] = value;
 					}
 				}
-
-			// Go through every key on the object,
 			} else {
 				for ( i in elems ) {
 					value = callback( elems[ i ], i, arg );
-
 					if ( value != null ) {
 						ret[ ret.length ] = value;
 					}
 				}
 			}
-
-			// Flatten any nested arrays
 			return core_concat.apply( [], ret );
 		},
-
-		// A global GUID counter for objects
 		guid: 1,
-
-		// Bind a function to a context, optionally partially applying any
-		// arguments.
+		// 改变this指向：
+		// var title='i am in window'
+		// var obj={
+		//	 title:'i am obj',
+		//   show:function(num1,num2){ console.log(this) } 
+		// }
+		// if ( typeof context === "string" )
+		//     参数简写的形式：$(document).on('click',$.proxy(obj,'show'))
+		//     转换为这种形式：$(document).on('click',$.proxy(obj.show,obj))
+		// args = core_slice.call( arguments, 2 )
+		// 	   $.proxy(obj.show,window,5)(6) ==> num1:5
+		// 在proxy函数中执行obj.show，并改变this指向,同时传递参数
 		proxy: function( fn, context ) {
 			var tmp, args, proxy;
-
 			if ( typeof context === "string" ) {
 				tmp = fn[ context ];
 				context = fn;
 				fn = tmp;
 			}
-
-			// Quick check to determine if target is callable, in the spec
-			// this throws a TypeError, but we will just return undefined.
 			if ( !jQuery.isFunction( fn ) ) {
 				return undefined;
 			}
-
-			// Simulated bind
 			args = core_slice.call( arguments, 2 );
 			proxy = function() {
 				return fn.apply( context || this, args.concat( core_slice.call( arguments ) ) );
 			};
-
 			// Set the guid of unique handler to the same of original handler, so it can be removed
 			proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
 			return proxy;
 		},
-
 		// Multifunctional method to get and set values of a collection
 		// The value/s can optionally be executed if it's a function
 		access: function( elems, fn, key, value, chainable, emptyGet, raw ) {
