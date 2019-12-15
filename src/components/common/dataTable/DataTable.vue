@@ -2,13 +2,11 @@
   <div id="data-table">
     <div class="data-table-header">
       <el-button icon="el-icon-plus" size="mini" @click="addClicked"></el-button>
-      <el-button icon="el-icon-delete" size="mini"></el-button>
-      <el-button icon="el-icon-printer" size="mini"></el-button>
-      <el-button icon="el-icon-document-copy" size="mini"></el-button>
-      <el-input v-model="search" size="mini" placeholder="输入关键字搜索"/>
+      <el-button icon="el-icon-delete" size="mini" @click="delClicked"></el-button>
+      <el-input v-model="search" size="mini" placeholder="输入关键字搜索" @input="searchChange"/>
     </div>
-    <el-table border :data="data">
-      <el-table-column type="selection" width="55" ></el-table-column>
+    <el-table border :data="data" @selection-change="selectionChange" ref="table">
+      <el-table-column type="selection" width="40"></el-table-column>
       <slot></slot>
     </el-table>
     <el-pagination
@@ -30,12 +28,25 @@ export default {
   name:'DateTable',
   data() {
     return {
-      search:''
+      search:'',
+      timer:null
     }
   },
   methods: {
     addClicked(){
       this.$emit('addClicked')
+    },
+    delClicked(){
+      this.$emit('delClicked')
+    },
+    searchChange(){
+      if(this.timer) clearTimeout(this.timer)
+      this.timer=setTimeout(()=>{
+        this.$emit('searchChange',this.search)
+      },600)
+    },
+    selectionChange(val){
+       this.$emit('checkboxChange',val)
     },
     sizeChange(){
 

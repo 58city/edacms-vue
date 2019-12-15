@@ -92,6 +92,7 @@ module.exports = {
 		'/roles': {
 			get: [110500, 110600, 'roles.list'],
 			post: [110501, 'roles.create'],
+			delete: [110501, 'roles.removeMany'],
 			'/:_id': {
 				get: [110500, 'roles.one'],
 				put: [110501, 'roles.update'],

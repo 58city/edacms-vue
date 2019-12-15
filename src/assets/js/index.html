@@ -6,16 +6,21 @@
 	
 </head>
 <body>
-	<script src="./jquery-2.0.3.js"></script>
+	<select id="province">
+		<option value="-1">请选择</option>
+	</select>
+	<select id="city"></select>
+	<select id="country"></select>
 	<script>
-		var obj={
-			title:'ce',
-			show:function(){ console.log(this.title) } 
+		var arr=[89,56,100,21,87,45,1,888];
+		for(var i=1;i<arr.length;i++){
+			for(var j=i;j>0;j--){
+				if(arr[j]<arr[j-1]){
+					[arr[j-1],arr[j]]=[arr[j],arr[j-1]]
+				}
+			}
 		}
-		$.proxy(obj.show,window)()
-		// $(document).on('click',$.proxy(obj.show,obj))
-		// $(document).on('click',$.proxy(obj,'show'))
+
 	</script>
-	
 </body>
 </html>

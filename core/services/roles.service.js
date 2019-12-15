@@ -4,27 +4,28 @@ var rolesModel = require('../models/roles.model');
 var usersModel = require('../models/users.model');
 
 /**
- * 多个角色
- * @param {Object} callback
+ * 获取多个角色
  */
-exports.all = function (callback) {
-  rolesModel.find({})
-    .lean()
-    .exec(function (err, roles) {
-      if (err) {
-        err.type = 'database';
-        return callback(err);
-      }
-
-      callback(null, roles);
-    });
+exports.all = function (options,callback) {
+  var query={}
+  if(options.search){
+    var query={
+      $or : [
+        {name : {$regex : options.search}},
+        {description : {$regex : options.search}}
+      ]
+    }
+  }
+  rolesModel.find(query).lean().exec(function (err, roles) {
+    if (err) {
+      err.type = 'database';
+      return callback(err);
+    }
+    callback(null, roles);
+  });
 };
-
 /**
- * 单个角色
- * @param {Object} options
- *        {MongoId} options._id
- * @param {Function} callback
+ * 获取单个角色
  */
 exports.one = function (options, callback) {
   if (!options._id) {
@@ -32,30 +33,19 @@ exports.one = function (options, callback) {
       type: 'system',
       error: '没有 _id 传入'
     };
-
     return callback(err);
   }
-
   var _id = options._id;
-
-  rolesModel.findById(_id)
-    .lean()
-    .exec(function (err, role) {
-      if (err) {
-        err.type = 'database';
-        return callback(err);
-      }
-
-      callback(null, role)
-    });
+  rolesModel.findById(_id).lean().exec(function (err, role) {
+    if (err) {
+      err.type = 'database';
+      return callback(err);
+    }
+    callback(null, role)
+  });
 };
-
 /**
- * 创建角色
- * @param {Object} options
- *        {MongoId} options._id
- *        {Object} options.data
- * @param {Function} callback
+ * 创建或更新角色
  */
 exports.save = function (options, callback) {
   if (!options.data) {
@@ -63,35 +53,29 @@ exports.save = function (options, callback) {
       type: 'system',
       error: '没有 data 传入'
     };
-
     return callback(err);
   }
-
   var _id = options._id;
   var data = options.data;
-
   if (!_.isEmpty(data.authorities)) {
     var isAdmin =  _.find(data.authorities, function (authority) {
       if (authority === 100000) return true;
     });
-
     if (isAdmin) {
       var err = {
         type: 'system',
-        error: '不允许更新后权限存在 100000 的角色'
+        error: '不允许更新或创建权限为 100000 的角色'
       };
-
       return callback(err);
     }
   }
-
   if (_id) {
+    // 在Mongoose 4.x,update验证器默认是关闭的，这里开启才会触发mongoose.Schema里的验证程序
     rolesModel.update({ _id: _id }, data, { runValidators: true }, function (err) {
       if (err) {
         err.type = 'database';
         return callback(err);
       }
-
       callback();
     });
   } else {
@@ -100,17 +84,12 @@ exports.save = function (options, callback) {
         err.type = 'database';
         return callback(err);
       }
-
       callback(null, role);
     });
   }
 };
-
 /**
- * 删除角色
- * @param {Object} options
- *        {MongoId} options._id
- * @param {Function} callback
+ * 删除单个角色
  */
 exports.remove = function (options, callback) {
   if (!options._id) {
@@ -118,34 +97,25 @@ exports.remove = function (options, callback) {
       type: 'system',
       error: '没有 _id 传入'
     };
-
     return callback(err);
   }
-
   var _id = options._id;
-
   rolesModel.findById(_id, function (err, role) {
     if (err) {
       err.type = 'database';
       return callback(err);
     }
-
     if (!role) return callback();
-
-    // 查找权限内是否有 100000
     var isAdmin = _.find(role.authorities, function (authority) {
       if (authority === 100000) return true;
     });
-
     if (isAdmin) {
       var err = {
         type: 'system',
         error: '不允许删除权限存在 100000 的角色'
       };
-
       return callback(err);
     }
-
     async.parallel([
       function (callback) {
         role.remove(function (err) {
@@ -153,7 +123,6 @@ exports.remove = function (options, callback) {
             err.type = 'database';
             return callback(err);
           }
-
           callback();
         });
       },
@@ -163,12 +132,62 @@ exports.remove = function (options, callback) {
             err.type = 'database';
             return callback(err);
           }
-
           callback();
         });
       }
     ], function (err) {
       callback(err);
     });
+  });
+};
+/**
+ * 删除多个角色
+ */
+exports.removeMany = function (options, callback) {
+  if (!options._ids) {
+    var err = {
+      type: 'system',
+      error: '没有 _ids数组 传入'
+    };
+    return callback(err);
+  }
+  var _ids = options._ids;
+  rolesModel.find({_id:{$in:_ids}}, function (err, roles) {
+    if (err) {
+      err.type = 'database';
+      return callback(err);
+    }
+    if (!roles) return callback();
+    async.series({
+      isAdmin:function(cb){
+        _.forEach(roles,function(role){
+          var isAdmin = _.find(role.authorities, function (authority) {
+            if (authority === 100000) return true;
+          });
+          if (isAdmin) {
+            var err = {
+              type: 'system',
+              error: '不允许删除权限存在 100000 的角色'
+            };
+            return cb(err);
+          }
+        })
+        cb();
+      },
+      removeRoles:function(cb){
+        
+        _.forEach(roles,function(role){
+          role.remove(function (err) {
+            if (err) {
+              err.type = 'database';
+              return cb(err);
+            }
+            
+          });
+        });
+      }
+    },function(err,result){
+      callback(err)
+    })
   });
 };

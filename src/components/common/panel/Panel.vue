@@ -11,7 +11,7 @@
         <input type="text" v-model="searchContent" placeholder="请输入搜索内容">
         <span @click="searchSubmit"><i class="fa fa-search"></i></span>
       </div>
-      <div class="widget-ctrls" @click="buttonClicked">
+      <div class="widget-ctrls">
         <slot name="button"></slot>
       </div>
     </div>
@@ -60,9 +60,6 @@ export default {
     },
     searchSubmit(){
       this.$emit('searchClicked',this.searchContent)
-    },
-    buttonClicked(){
-      this.$emit('buttonClicked')
     }
   }
 }
@@ -83,7 +80,7 @@ export default {
   clear: both;
 }
 #widget > .widget-header {
-  height: 34px;
+  height: 45px;
   color: #333;
   border: 1px solid #EBEEF5;
   background: #f5f5f5;
@@ -91,7 +88,7 @@ export default {
 /* 标题 */
 #widget > .widget-header h2 {
   height: 100%;
-  line-height: 34px;
+  line-height: 45px;
   font-size: 14px;
   margin-left: 13px;
   float: left;
@@ -130,8 +127,8 @@ export default {
 }
 #widget > .widget-header .widget-tabs > li{
   float: left;
-  height: 32px;
-  line-height: 32px;
+  height: 43px;
+  line-height: 43px;
   padding: 0 10px;
   cursor: pointer;
 }
@@ -150,8 +147,8 @@ export default {
 }
 #widget > .widget-header .widget-ctrls button{
   display: inline-block;
-  height: 2pc;
-  line-height: 2pc;
+  height: 43px;
+  line-height: 43px;
   padding: 0 6px;
   border: none;border-left: 1px solid rgba(0, 0, 0, 0.09);
   outline: none;background: none;
@@ -159,6 +156,12 @@ export default {
 }
 #widget > .widget-header .widget-ctrls button:hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+#widget > .widget-header .widget-ctrls button:disabled{
+  cursor: not-allowed;
+}
+#widget > .widget-header .widget-ctrls button i{
+  margin-right: 4px;
 }
 /* 主题区域 */
 #widget > .widget-body {
