@@ -39,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
  * 转给 Roter 处理路由
  */
 app.all('/api/*', function (req, res, next) {
+  // if(req.origin=="taobao.com"){ * * * }
   res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
