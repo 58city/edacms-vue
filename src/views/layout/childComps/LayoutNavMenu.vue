@@ -10,11 +10,11 @@
     </div>
 
     <el-menu default-active="0" background-color="transparent" text-color="#fff" active-text-color="#ffd04b" :router="true">
-      <el-menu-item index="/admin">
+      <el-menu-item index="/backend">
         <i class="el-icon-menu"></i>
         <span slot="title">控制面板</span>
       </el-menu-item>
-      <el-menu-item index="/admin/features" v-if="auths.features.read">
+      <el-menu-item index="/backend/features" v-if="auths.features.read">
         <i class="el-icon-s-flag"></i>
         <span slot="title">推荐管理</span>
       </el-menu-item>
@@ -26,12 +26,12 @@
         <template slot="title"><i class="el-icon-s-cooperation"></i><span>内容管理</span></template>
         <!-- 第一次遍历：顶级的channel和column -->
         <div v-for="(item,index) in categories_tree" :key="index" style="margin-left:34px;border-left:1px solid #aaa;">
-          <el-menu-item v-if="item.type==='column'" :index="'/admin/contents/'+item._id">{{item.name}}</el-menu-item>
+          <el-menu-item v-if="item.type==='column'" :index="'/backend/contents/'+item._id">{{item.name}}</el-menu-item>
           <el-submenu v-if="item.type==='channel'&&item.nodes" :index="item._id">
             <template slot="title">{{item.name}}</template>
             <!-- 第二次遍历：频道下的栏目 -->
             <div v-for="(item,index) in item.nodes" :key="index">
-              <el-menu-item v-if="item.type==='column'" :index="'/admin/contents/'+item._id">-- {{item.name}}</el-menu-item>
+              <el-menu-item v-if="item.type==='column'" :index="'/backend/contents/'+item._id">-- {{item.name}}</el-menu-item>
             </div>
           </el-submenu>
         </div>
@@ -43,28 +43,28 @@
       <el-submenu index="4" v-if="auths.pages.read&&columns.length>0">
         <template slot="title"><i class="el-icon-s-order"></i><span>单页管理</span></template>
         <el-menu-item v-for="(item,index) in pages" :key="index" 
-          :index="'/admin/pages/'+item._id" 
+          :index="'/backend/pages/'+item._id" 
           style="margin-left:34px;border-left:1px solid #aaa;">
           {{item.name}}
         </el-menu-item>
       </el-submenu>
-      <el-menu-item index="/admin/media" v-if="auths.media.read">
+      <el-menu-item index="/backend/media" v-if="auths.media.read">
         <i class="el-icon-picture"></i>
         <span slot="title">媒体中心</span>
       </el-menu-item>
       <el-submenu index="5" v-if="auths.roles.read||auths.adminUsers.read||auths.account.read">
         <template slot="title"><i class="el-icon-user-solid"></i><span>账号中心</span></template>
-        <el-menu-item index="/admin/roles" v-if="auths.roles.read"
+        <el-menu-item index="/backend/roles" v-if="auths.roles.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           权限角色
         </el-menu-item>
-        <el-menu-item index="/admin/admin-users" v-if="auths.adminUsers.read"
+        <el-menu-item index="/backend/admins" v-if="auths.adminUsers.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           后台用户
         </el-menu-item>
-        <el-menu-item index="/admin/account" v-if="auths.account.read"
+        <el-menu-item index="/backend/account" v-if="auths.account.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           我的账号
@@ -72,22 +72,22 @@
       </el-submenu>
       <el-submenu index="6" v-if="auths.siteInfo.read||auths.categories.read||auths.contentModels.read||auths.featureModels.read">
         <template slot="title"><i class="el-icon-s-tools"></i><span>网站配置</span></template>
-        <el-menu-item index="/admin/site-info" v-if="auths.siteInfo.read"
+        <el-menu-item index="/backend/site-info" v-if="auths.siteInfo.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           站点信息
         </el-menu-item>
-        <el-menu-item index="/admin/categories" v-if="auths.categories.read"
+        <el-menu-item index="/backend/categories" v-if="auths.categories.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           分类管理
         </el-menu-item>
-        <el-menu-item index="/admin/content-models" v-if="auths.contentModels.read"
+        <el-menu-item index="/backend/content-models" v-if="auths.contentModels.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           内容模型
         </el-menu-item>
-        <el-menu-item index="/admin/feature-models" v-if="auths.featureModels.read"
+        <el-menu-item index="/backend/feature-models" v-if="auths.featureModels.read"
           style="margin-left:34px;border-left:1px solid #aaa;"
         >
           推荐模型

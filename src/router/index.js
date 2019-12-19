@@ -20,7 +20,9 @@ const Media = ()=>import('views/media/Media')
 const Roles = ()=>import('views/roles/Roles')
 const RolesList = ()=>import('views/roles/RolesList')
 const RolesDetail = ()=>import('views/roles/RolesDetail')
-const AdminUsers = ()=>import('views/adminUsers/AdminUsers')
+const Admins = ()=>import('views/adminUsers/Admins')
+const AdminsList = ()=>import('views/adminUsers/AdminsList')
+const AdminsDetail = ()=>import('views/adminUsers/AdminsDetail')
 const MyAccount = ()=>import('views/myAccount/MyAccount')
 const SiteInfo = ()=>import('views/siteInfo/SiteInfo')
 const Categories = ()=>import('views/categories/Categories')
@@ -53,7 +55,7 @@ const routes = [
     }
   },
   {
-    path:'/admin',component:Layout,meta:{title:'首页'},
+    path:'/backend',component:Layout,meta:{title:'首页'},
     children: [
       {
         path: '',name:'dashboard',component: Dashboard,meta:{title:'控制面板'}
@@ -75,18 +77,29 @@ const routes = [
         path: 'roles',component: Roles,meta:{title:'权限角色'},
         children:[
           {
-            path: '',name:'roles-list',component: RolesList,meta:{title:'角色列表'}
+            path: '',name:'role-list',component: RolesList,meta:{title:'角色列表'}
           },
           {
-            path: 'create',name:'create',component: RolesDetail,meta:{title:'新增角色'}
+            path: 'create',name:'role-create',component: RolesDetail,meta:{title:'新增角色'}
           },
           {
-            path: 'update/:id',name:'update',component: RolesDetail,meta:{title:'修改角色'}
+            path: 'update/:id',name:'role-update',component: RolesDetail,meta:{title:'修改角色'}
           }
         ]
       },
       {
-        path: 'admin-users',name:'admin-users',component: AdminUsers,meta:{title:'后台用户'}
+        path: 'admins',component: Admins,meta:{title:'后台用户'},
+        children:[
+          {
+            path: '',name:'admin-list',component: AdminsList,meta:{title:'管理员列表'}
+          },
+          {
+            path: 'create',name:'admin-create',component: AdminsDetail,meta:{title:'新增管理员'}
+          },
+          {
+            path: 'update/:id',name:'admin-update',component: AdminsDetail,meta:{title:'修改管理员'}
+          }
+        ]
       },
       {
         path: 'account',name:'account',component: MyAccount,meta:{title:'我的账号'}
@@ -106,7 +119,7 @@ const routes = [
     ]
   },
   {
-    path:'*',name:'notFound',redirect:'/admin'
+    path:'*',name:'notFound',redirect:'/backend'
   }
 ]
 

@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     add(){
-      this.$router.push('/admin/roles/create')
+      this.$router.push({name:'role-create'})
     },
     del(index,row){
       this.$confirm('点击确定将会删除此角色, 是否继续?', '删除角色', {
@@ -41,11 +41,9 @@ export default {
           this.$message.success('删除成功')
           // 同步视图
           this.roleList.forEach((item,i)=>{
-            for(var key in item){
-              if(item[key]==row._id){
-                this.roleList.splice(i,1)
-                return false
-              }
+            if(item['_id']==row._id){
+              this.roleList.splice(i,1)
+              return false
             }
           })
         }).catch(err=>{
@@ -54,7 +52,7 @@ export default {
       })
     },
     edit(index,row){
-      this.$router.push({name:'update',params:{id:row._id}})
+      this.$router.push({name:'role-update',params:{id:row._id}})
     },
     get(){
       get_role().then(res=>{
@@ -81,7 +79,12 @@ export default {
         delete_role({_ids:this.checked.map(item=>item._id)}).then(res=>{
           this.$message.success('删除成功')
           // 同步视图
-          console.log(res)
+          // 这里要倒序循环，因为splice会改变原数组（索引跟着改变），会导致正序循环不能正确删除
+          for(var i=this.roleList.length-1;i>=0;i--){
+            if(this.checked.map(item=>item._id).indexOf(this.roleList[i]['_id'])!=-1){
+              this.roleList.splice(i,1)
+            }
+          }
         }).catch(err=>{
           this.$message.error(err.message)
         })

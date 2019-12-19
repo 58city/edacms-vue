@@ -167,6 +167,22 @@ exports.remove = function (req, res) {
  * 删除多个角色
  */
 exports.removeMany = function(req,res){
+  req.checkQuery({
+    '_ids': {
+      notEmpty: {
+        options: [true],
+        errorMessage: '_ids 不能为空'
+      },
+      inArray: {
+        options: ['isMongoId'],
+        errorMessage: '_ids 内需为mongoId'
+      }
+    }
+  });
+  if (req.validationErrors()) {
+    logger.system().error(__filename, '参数验证失败', req.validationErrors());
+    return res.status(400).end();
+  }
   var ids=req.query._ids;
   rolesService.removeMany({_ids:ids},function(err){
     if (err) {

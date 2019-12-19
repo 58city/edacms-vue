@@ -160,34 +160,41 @@ exports.removeMany = function (options, callback) {
     if (!roles) return callback();
     async.series({
       isAdmin:function(cb){
+        var isAdmin;
         _.forEach(roles,function(role){
-          var isAdmin = _.find(role.authorities, function (authority) {
+          isAdmin = _.find(role.authorities, function (authority) {
             if (authority === 100000) return true;
           });
-          if (isAdmin) {
-            var err = {
-              type: 'system',
-              error: '不允许删除权限存在 100000 的角色'
-            };
-            return cb(err);
-          }
         })
-        cb();
+        if (isAdmin) {
+          var err = {
+            type: 'system',
+            error: '删除的角色中包含 100000 的角色'
+          };
+          return cb(err);
+        }
+        cb(null);
       },
       removeRoles:function(cb){
-        
-        _.forEach(roles,function(role){
-          role.remove(function (err) {
-            if (err) {
-              err.type = 'database';
-              return cb(err);
-            }
-            
-          });
+        rolesModel.remove({_id:{$in:_.map(roles,'_id')}},function(err,result){
+          if(err){
+            err.type='database';
+            return cb(err);
+          }
+          cb();
+        })
+      },
+      updateUsers:function(cb){
+        usersModel.updateMany({role:{$in:_.map(roles,'_id')}}, { $unset: { role: true } }, function (err) {
+          if (err) {
+            err.type = 'database';
+            return cb(err);
+          }
+          cb();
         });
       }
     },function(err,result){
-      callback(err)
+      callback(err);
     })
   });
 };

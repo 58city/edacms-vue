@@ -1,7 +1,7 @@
 <template>
   <div id="roles-detail">
     <panel tab :tab-titles="['基本信息','权限设置']" @tabClicked="tTab">
-      <button slot="button" :disabled="disabled" @click="saveRole"><i class="fa fa-save"></i>保存设置</button>
+      <button slot="button" :disabled="disabled" @click="save"><i class="fa fa-save"></i>保存设置</button>
       <el-form slot="body" :model="roleInfo" :rules="rules" ref="roleInfoForm" label-width="100px">
         <div v-show="currentTab==0">
           <el-form-item label="角色名称" prop="name">
@@ -49,20 +49,28 @@ export default {
   },
   created() {
     /* 获取系统权限列表，并给每个item添加select字段，默认为0无权限，1查看，2查看和编辑 */
-    get_auth_list().then(res=>{
-      this.authList=res.data.filter(item=>{
-        return item.code!=100000
-      }).map(item=>{
-        item.select=0
-        return item
-      })
-    }).catch(err=>{
-      this.$message.error(err.message)
-    })
+    this.getAuthorities()
     /* 如果id存在获取该id对应的角色，并显示角色信息，以及设置权限列表选中状态 */
     if(this.$route.params.id){
       this.disabled=false
-      get_role({id:this.$route.params.id}).then(res=>{
+      this.get(this.$route.params.id)
+    }
+  },
+  methods: {
+    getAuthorities(){
+      get_auth_list().then(res=>{
+        this.authList=res.data.filter(item=>{
+          return item.code!=100000
+        }).map(item=>{
+          item.select=0
+          return item
+        })
+      }).catch(err=>{
+        this.$message.error(err.message)
+      })
+    },
+    get(id){
+      get_role({id:id}).then(res=>{
         // 显示角色信息
         this.roleInfo.name=res.data.name
         this.roleInfo.description=res.data.description
@@ -78,13 +86,8 @@ export default {
       }).catch(err=>{
         this.$message.error(err.message)
       })
-    }
-  },
-  methods: {
-    tTab(index){
-      this.currentTab=index
     },
-    saveRole(){
+    save(){
       // 数据
       this.disabled=true
       this.roleInfo.authorities=[]
@@ -109,7 +112,7 @@ export default {
       if(this.$route.params.id){
         update_role(this.$route.params.id,this.roleInfo).then(res=>{
           this.$message.success('修改成功')
-          this.$router.push('/admin/roles')
+          this.$router.push({name:'role-list'})
         }).catch(err=>{
           this.$message.error(err.message)
         })
@@ -118,10 +121,13 @@ export default {
       // 新增
       create_role(this.roleInfo).then(res=>{
         this.$message.success('添加成功')
-        this.$router.push('/admin/roles')
+        this.$router.push({name:'role-list'})
       }).catch(err=>{
         this.$message.error(err.message)
       })
+    },
+    tTab(index){
+      this.currentTab=index
     },
     formInput(){
       this.$refs.roleInfoForm.validate(res=>res ? this.disabled=false : this.disabled=true)

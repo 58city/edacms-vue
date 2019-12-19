@@ -51,7 +51,7 @@ export function request(config){
               // 没有权限
               case 'NO_AUTHORITY':
                 err.message = '无权限，请联系管理员'
-                router.replace({ path: '/admin' })
+                router.replace({ path: '/backend' })
               break;
               // 用户名或密码错误
               case 'WRONG_EMAIL_OR_PASSWORD':
