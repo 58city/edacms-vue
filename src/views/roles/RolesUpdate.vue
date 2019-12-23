@@ -27,9 +27,9 @@
 
 <script>
 import Panel from 'components/common/panel/Panel'
-import {get_auth_list,get_role,create_role,update_role} from 'network/roles'
+import {get_auth_list,get_role,update_role} from 'network/roles'
 export default {
-  name:'RolesDetail',
+  name:'RolesUpdate',
   data() {
     return {
       authList:[],
@@ -51,10 +51,8 @@ export default {
     /* 获取系统权限列表，并给每个item添加select字段，默认为0无权限，1查看，2查看和编辑 */
     this.getAuthorities()
     /* 如果id存在获取该id对应的角色，并显示角色信息，以及设置权限列表选中状态 */
-    if(this.$route.params.id){
-      this.disabled=false
-      this.get(this.$route.params.id)
-    }
+    this.disabled=false
+    this.get(this.$route.params.id)
   },
   methods: {
     getAuthorities(){
@@ -88,7 +86,6 @@ export default {
       })
     },
     save(){
-      // 数据
       this.disabled=true
       this.roleInfo.authorities=[]
       this.authList.forEach(element => {
@@ -108,19 +105,8 @@ export default {
           break;
         }
       })
-      // 更新
-      if(this.$route.params.id){
-        update_role(this.$route.params.id,this.roleInfo).then(res=>{
-          this.$message.success('修改成功')
-          this.$router.push({name:'role-list'})
-        }).catch(err=>{
-          this.$message.error(err.message)
-        })
-        return false
-      }
-      // 新增
-      create_role(this.roleInfo).then(res=>{
-        this.$message.success('添加成功')
+      update_role(this.$route.params.id,this.roleInfo).then(res=>{
+        this.$message.success('修改成功')
         this.$router.push({name:'role-list'})
       }).catch(err=>{
         this.$message.error(err.message)

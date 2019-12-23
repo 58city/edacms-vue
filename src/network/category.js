@@ -1,5 +1,5 @@
 import {request} from './request'
-export function categories_query(){
+export function get_categories(){
   return request({
     url:'/api/categories',
     method:'get'

@@ -30,7 +30,7 @@
 import LayoutHeader from './childComps/LayoutHeader'
 import LayoutNavMenu from './childComps/LayoutNavMenu'
 import LayoutBreadcrumb from './childComps/LayoutBreadcrumb'
-import {signOut} from 'network/login'
+import {signOut} from 'network/account'
 export default {
   name:'Layout',
   data() {
@@ -42,6 +42,8 @@ export default {
     logout(){
       signOut().then(res=>{
         this.$cookies.remove('edacmsSid')
+        this.$localStorage.remove('userid')
+        this.$localStorage.remove('email')
         this.$localStorage.remove('nickname')
         this.$localStorage.remove('rolename')
         this.$localStorage.remove('authorities')

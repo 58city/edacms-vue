@@ -6,11 +6,11 @@ var rolesService = require('../services/roles.service');
  * 获取多个角色
  */
 exports.list = function (req, res) {
-  var data={};
+  var query={};
   if(req.query.search){
-    data.search=req.query.search;
+    query.search=req.query.search;
   }
-  rolesService.all(data,function (err, roles) {
+  rolesService.all(query,function (err, roles) {
     if (err) {
       logger[err.type]().error(err);
       return res.status(500).end();
@@ -162,7 +162,6 @@ exports.remove = function (req, res) {
     res.status(204).end();
   });
 };
-
 /**
  * 删除多个角色
  */

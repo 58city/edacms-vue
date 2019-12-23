@@ -6,6 +6,8 @@ Vue.use(Vuex)
 
 const store=new Vuex.Store({
   state: {
+    userid:storage.get('userid',''),
+    email:storage.get('email',''),
     nickname:storage.get('nickname',''),
     rolename:storage.get('rolename',''),
     authorities:storage.getObject('authorities',[]), 
@@ -26,14 +28,26 @@ const store=new Vuex.Store({
   },
   mutations: {
     handleCurrentUserInfo(state, user){
+      state.userid=user._id
+      state.email=user.email
       state.nickname=user.nickname
       state.rolename=user.role.name
       state.authorities=user.role.authorities
       // 把登录的用户保存到localStorage中
       // 防止页面刷新，导致vuex重新启动，用户就成为初始值（初始值为空）的情况
+      storage.set('userid', user._id)
+      storage.set('email', user.email)
       storage.set('nickname', user.nickname)
       storage.set('rolename', user.role.name)
       storage.setObject('authorities', user.role.authorities)
+    },
+    setEmail(state,email){
+      state.email=email
+      storage.set('email', email)
+    },
+    setNickname(state,nickname){
+      state.nickname=nickname
+      storage.set('nickname', nickname)
     },
     handleCategories(state,categories){
       state.categories=categories

@@ -5,9 +5,6 @@ var usersService = require('../services/users.service');
 
 /**
  * 检查是否登陆
- * @param {Object} req
- * @param {Object} res
- * @param {Function} next
  */
 exports.check = function (req, res, next) {
 	if (req.session.user) {
@@ -21,13 +18,8 @@ exports.check = function (req, res, next) {
 		});
 	}
 };
-
 /**
  * 登陆
- * @param {Object} req
- * 				{String} req.body.email
- * 				{String} req.body.password
- * @param {Function} res
  */
 exports.signIn = function (req, res) {
 	req.checkBody({
@@ -56,22 +48,18 @@ exports.signIn = function (req, res) {
 			isBoolean: { errorMessage: 'autoSignIn 需为布尔值' }
 		}
 	});
-
 	var email = req.body.email;
 	var password = req.body.password;
 	var autoSignIn = req.body.autoSignIn;
-
 	if (req.validationErrors()) {
 		logger.system().error(__filename, '参数验证失败', req.validationErrors());
 		return res.status(400).end();
 	}
-
 	usersService.one({ email: email, selectPassword: true }, function (err, user) {
 		if (err) {
 			logger[err.type]().error(__filename, err);
 			return res.status(500).end();
 		}
-
 		if (user && sha1(password) === user.password) {
 			req.session.user = user._id;
 			if (autoSignIn) req.session.cookie.maxAge = 60 * 1000 * 60 * 24 * 90;
@@ -86,11 +74,8 @@ exports.signIn = function (req, res) {
 		}
 	});
 };
-
 /**
  * 注销登陆
- * @param {Object} req
- * @param {Object} res
  */
 exports.signOut = function (req, res) {
 	req.session.destroy(function(err) {
@@ -98,15 +83,11 @@ exports.signOut = function (req, res) {
 			logger.system().error(__filename, err);
 			return res.status(500).end();
 		}
-
 		res.status(204).end();
 	});
 };
-
 /**
  * 查询当前账号
- * @param {Object} req
- * @param {Object} res
  */
 exports.current = function (req, res) {
 	if (req.session.user) {
@@ -126,14 +107,8 @@ exports.current = function (req, res) {
 		});
 	}
 };
-
 /**
  * 更新账号
- * @param {Object} req
- * 				{String} req.body.email
- * 				{String} req.body.nickname
- * 				{String} req.body.password
- * @param {Function} res
  */
 exports.update = function (req, res) {
 	req.checkBody({
@@ -160,25 +135,20 @@ exports.update = function (req, res) {
 			}
 		}
 	});
-
 	if (req.validationErrors()) {
 		logger.system().error(__filename, req.validationErrors());
 		return res.status(400).end();
 	}
-
 	var data = {
 		nickname: req.body.nickname,
 		email: req.body.email
 	};
-
 	if (req.body.password) data.password = sha1(req.body.password);
-
 	usersService.save({ _id: req.session.user, data: data, userSelf: true }, function (err) {
 		if (err) {
 			logger[err.type]().error(__filename, err);
 			return res.status(400).end();
 		}
-
 		res.status(204).end();
 	});
 };

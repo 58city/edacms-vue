@@ -99,9 +99,10 @@ module.exports = {
 				delete: [110501, 'roles.remove']
 			}
 		},
-		'/admin-users': {
+		'/bgadmin': {
 			get: [110600, 'admin-users.list'],
 			post: [110601, 'admin-users.create'],
+			delete: [110601, 'admin-users.removeMany'],
 			'/:_id': {
 				get: [110600, 'admin-users.one'],
 				put: [110601, 'admin-users.update'],

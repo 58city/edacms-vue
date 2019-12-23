@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import {signIn,getCurrentUserInfo} from 'network/login'
-import {categories_query} from 'network/category'
+import {signIn,get_account} from 'network/account'
+import {get_categories} from 'network/category'
 export default {
   name:'Login',
   data() {
@@ -57,10 +57,10 @@ export default {
       this.$refs.loginForm.validate(res=>{
         if(res){
           signIn(this.loginInfo).then(res=>{
-            categories_query().then(res=>{
+            get_categories().then(res=>{
               this.$store.commit('handleCategories',res.data)
             })
-            getCurrentUserInfo().then(res=>{
+            get_account().then(res=>{
               this.$store.commit('handleCurrentUserInfo',res.data)
             })
             this.$router.replace('/admin')

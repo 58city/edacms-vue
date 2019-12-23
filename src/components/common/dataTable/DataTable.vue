@@ -1,8 +1,8 @@
 <template>
   <div id="data-table">
     <div class="data-table-header">
-      <el-button icon="el-icon-plus" size="mini" @click="addClicked"></el-button>
-      <el-button icon="el-icon-delete" size="mini" @click="delClicked"></el-button>
+      <el-button icon="el-icon-plus" size="mini" @click="addClicked" :disabled="!editable"></el-button>
+      <el-button icon="el-icon-delete" size="mini" @click="delClicked" :disabled="!editable"></el-button>
       <el-input v-model="search" size="mini" placeholder="输入关键字搜索" @input="searchChange"/>
     </div>
     <el-table border :data="data" @selection-change="selectionChange" ref="table">
@@ -65,6 +65,10 @@ export default {
     footer:{
       type:Boolean,
       default:false
+    },
+    editable:{
+      type:Boolean,
+      default:true
     }
   }
 }

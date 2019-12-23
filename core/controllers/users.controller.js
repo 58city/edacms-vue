@@ -6,6 +6,10 @@ module.exports = {
       'email': {
         optional: true,
         isEmail: { errorMessage: 'email 格式不正确' }
+      },
+      'nickname': {
+        optional: true,
+        isString: { errorMessage: 'nickname 需为字符串' }
       }
     });
     if (req.validationErrors()) {
@@ -14,6 +18,7 @@ module.exports = {
     }
     var query = {};
     if (req.query.email) query.email = req.query.email;
+    if (req.query.nickname) query.nickname = req.query.nickname;
     usersService.one(query, function (err, user) {
       if (err) {
         logger.system().error(__filename, err);

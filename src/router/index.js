@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import {hasInstall} from 'network/install'
+import Store from '../store'
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -19,10 +20,12 @@ const Pages = ()=>import('views/pages/Pages')
 const Media = ()=>import('views/media/Media')
 const Roles = ()=>import('views/roles/Roles')
 const RolesList = ()=>import('views/roles/RolesList')
-const RolesDetail = ()=>import('views/roles/RolesDetail')
+const RolesCreate = ()=>import('views/roles/RolesCreate')
+const RolesUpdate = ()=>import('views/roles/RolesUpdate')
 const Admins = ()=>import('views/adminUsers/Admins')
 const AdminsList = ()=>import('views/adminUsers/AdminsList')
-const AdminsDetail = ()=>import('views/adminUsers/AdminsDetail')
+const AdminsCreate = ()=>import('views/adminUsers/AdminsCreate')
+const AdminsUpdate = ()=>import('views/adminUsers/AdminsUpdate')
 const MyAccount = ()=>import('views/myAccount/MyAccount')
 const SiteInfo = ()=>import('views/siteInfo/SiteInfo')
 const Categories = ()=>import('views/categories/Categories')
@@ -30,30 +33,8 @@ const ContentModels = ()=>import('views/contentModels/ContentModels')
 const FeatureModels = ()=>import('views/featureModels/FeatureModels')
 
 const routes = [
-  {
-    path:'/install',name:'install',component:Install,
-    beforeEnter: (to, from, next) => {
-      hasInstall().then( res=> { 
-        if(!res.data.hasInstall){
-          next()
-        }else{
-          next({path: '/login'})
-        }
-      })
-    }
-  },
-  {
-    path:'/login',name:'login',component:Login,
-    beforeEnter: (to, from, next) => {
-      hasInstall().then( res=> { 
-        if(res.data.hasInstall){
-          next()
-        }else{
-          next({path: '/install'})
-        }
-      })
-    }
-  },
+  { path:'/install',name:'install',component:Install },
+  { path:'/login',name:'login',component:Login },
   {
     path:'/backend',component:Layout,meta:{title:'首页'},
     children: [
@@ -77,13 +58,13 @@ const routes = [
         path: 'roles',component: Roles,meta:{title:'权限角色'},
         children:[
           {
-            path: '',name:'role-list',component: RolesList,meta:{title:'角色列表'}
+            path: '',name:'role-list',component: RolesList,meta:{title:'角色列表',category:'roles',action:'read'}
           },
           {
-            path: 'create',name:'role-create',component: RolesDetail,meta:{title:'新增角色'}
+            path: 'create',name:'role-create',component: RolesCreate,meta:{title:'新增角色',category:'roles',action:'edit'}
           },
           {
-            path: 'update/:id',name:'role-update',component: RolesDetail,meta:{title:'修改角色'}
+            path: 'update/:id',name:'role-update',component: RolesUpdate,meta:{title:'修改角色',category:'roles',action:'edit'}
           }
         ]
       },
@@ -91,13 +72,13 @@ const routes = [
         path: 'admins',component: Admins,meta:{title:'后台用户'},
         children:[
           {
-            path: '',name:'admin-list',component: AdminsList,meta:{title:'管理员列表'}
+            path: '',name:'admin-list',component: AdminsList,meta:{title:'管理员列表',category:'adminUsers',action:'read'}
           },
           {
-            path: 'create',name:'admin-create',component: AdminsDetail,meta:{title:'新增管理员'}
+            path: 'create',name:'admin-create',component: AdminsCreate,meta:{title:'新增管理员',category:'adminUsers',action:'edit'}
           },
           {
-            path: 'update/:id',name:'admin-update',component: AdminsDetail,meta:{title:'修改管理员'}
+            path: 'update/:id',name:'admin-update',component: AdminsUpdate,meta:{title:'修改管理员',category:'adminUsers',action:'edit'}
           }
         ]
       },
@@ -131,13 +112,28 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   let cookies=router.app.$cookies.get('edacmsSid')
-  if(!cookies&&to.name!='login'&&to.name!='install'){
-    next({
-      path: '/login'
+  // 进入登录路由前，检查是否安装
+  if(!cookies&&(to.name=='login'||to.name=='install')){
+    hasInstall().then( res=> { 
+      if(!res.data.hasInstall){
+        next({path: '/install'})
+      }else{
+        next({path: '/login'})
+      }
     })
-  }else{
-    next()
   }
+  // 进入非登录路由前，检查是否存在cookies
+  if(!cookies&&to.name!='login'&&to.name!='install'){
+    return next({ path: '/login' })
+  }
+  // 进入路由前，检查是否有进入权限
+  let category=to.meta.category
+  let action=to.meta.action
+  let auths=Store.getters.getAuths
+  if(category&&!auths[category][action]){
+    return next({ path: to.matched[1].path })
+  }
+  next()
 })
 
 export default router

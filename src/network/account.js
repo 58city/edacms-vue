@@ -12,9 +12,16 @@ export function signOut(){
     method:'put'
   })
 }
-export function getCurrentUserInfo(){
+export function get_account(){
   return request({
     url:'/api/account',
     method:'get'
+  })
+}
+export function update_account(data){
+  return request({
+    url:'/api/account',
+    method:'put',
+    data:data
   })
 }

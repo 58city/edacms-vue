@@ -1,12 +1,12 @@
 <template>
   <div id="roles-list">
-      <data-table :data="roleList" @addClicked="add" @checkboxChange="checkall" @delClicked="delMany" @searchChange="search">
+      <data-table :data="roleList" @addClicked="add" @checkboxChange="checkall" @delClicked="delMany" @searchChange="search" :editable="auths.roles.edit">
         <el-table-column label="角色名称" prop="name" width="200"></el-table-column>
         <el-table-column label="角色说明" prop="description"></el-table-column>
         <el-table-column label="操作" width="150">
           <template slot-scope="scope" >
-            <el-button size="mini" @click="edit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" @click="edit(scope.$index, scope.row)" :disabled="!auths.roles.edit">编辑</el-button>
+            <el-button size="mini" type="danger" @click="del(scope.$index, scope.row)" :disabled="!auths.roles.edit">删除</el-button>
           </template>
         </el-table-column>
       </data-table>
@@ -102,6 +102,11 @@ export default {
   },
   components:{
     DataTable
+  },
+  computed: {
+    auths(){
+      return this.$store.getters.getAuths
+    }
   }
 }
 </script>
