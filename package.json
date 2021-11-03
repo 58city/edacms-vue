@@ -35,7 +35,7 @@
     "require-all": "^2.0.0",
     "rimraf": "^2.5.2",
     "serve-favicon": "^2.2.1",
-    "validator": "^4.9.x",
+    "validator": "^13.7.x",
     "vue": "^2.6.10",
     "vue-cookies": "^1.5.13",
     "vue-router": "^3.1.3",
